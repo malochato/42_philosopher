@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/10 00:21:16 by malde-ch          #+#    #+#             */
+/*   Updated: 2025/03/10 00:21:20 by malde-ch         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 int	ft_atoi(const char *nptr)
@@ -44,33 +56,27 @@ int	check_arguments(int argc, char **argv)
         if (ft_atoi(argv[i]) <= 0 || !check_content(argv[i]))
         {
             ft_putstr_fd("Error: All arguments must be positive numbers smaller than MAX_INT\n", 2);
-            return (0);
+            return (1);
         }
         if (i == 1 && ft_atoi(argv[i]) >= PHILO_MAX + 1)
         {
             ft_putstr_fd("Error: Number of philosophers must be smaller than PHILO_MAX (200)\n", 2);
-            return (0);
+            return (1);
         }
         i++;
     }
-    return (1);
+    return (0);
 }
 
-t_philo_config *parser(int argc, char **argv)
+int	parser(int argc, char **argv, t_config *config)
 {
-    t_philo_config *config;
-
-
     if (argc < 5 || argc > 6)
     {
         ft_putstr_fd("Error: Invalid number of arguments\n", 2);
-        return (NULL);
+        return (1);
     }
-    if (!check_arguments(argc, argv))
-        return (NULL);
-    config = malloc(sizeof(t_philo_config));
-    if (!config)
-        return (NULL);
+    if (check_arguments(argc, argv))
+        return (1);
     config->number_of_philosophers = ft_atoi(argv[1]);
     config->time_to_die = ft_atoi(argv[2]);
     config->time_to_eat = ft_atoi(argv[3]);
@@ -79,5 +85,6 @@ t_philo_config *parser(int argc, char **argv)
         config->number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);
     else
         config->number_of_times_each_philosopher_must_eat = -1;
-    return (config);
+    return (0);
 }
+
