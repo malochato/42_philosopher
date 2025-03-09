@@ -1,17 +1,5 @@
 #include "philo.h"
 
-
-void    *routine(void *arg)
-{
-    t_philosopher *philosopher;
-
-    philosopher = (t_philosopher *)arg;
-    sleep(1);
-    printf("philosopher routine from %d\n", philosopher->id);
-    return (NULL);
-}
-
-
 long long get_current_time()
 {
     struct timeval tv;

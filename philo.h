@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 15:34:19 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/01/27 15:34:21 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/09 23:52:17 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,6 @@
 
 # define PHILO_MAX 200
 
-typedef struct s_philo_config
-{
-	int	number_of_philosophers;
-	int	time_to_die;
-	int	time_to_eat;
-	int	time_to_sleep;
-	int	number_of_times_each_philosopher_must_eat;
-}	t_philo_config;
-
-t_philo_config	*parser(int argc, char **argv);
-
 typedef enum e_philo_state
 {
 	THINKING,
@@ -41,6 +30,27 @@ typedef enum e_philo_state
 	SLEEPING,
 	DEAD
 }	t_philo_state;
+
+
+typedef struct s_philosopher t_philosopher;
+
+typedef struct s_philo_config
+{
+	int	number_of_philosophers;
+	int	time_to_die;
+	int	time_to_eat;
+	int	time_to_sleep;
+	int	number_of_times_each_philosopher_must_eat;
+
+
+
+	t_philosopher	*philosophers;
+
+
+
+}	t_philo_config;
+
+t_philo_config	*parser(int argc, char **argv);
 
 typedef struct s_philosopher
 {
