@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 23:58:51 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/10 00:03:54 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/10 22:32:53 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ long long get_current_time()
 }
 
 
+
 int	start_diner(t_config *config)
 {
 	int i;
@@ -41,7 +42,17 @@ int	start_diner(t_config *config)
 			ft_putstr_fd("Error: pthread_create failed\n", 2);
 			return (1);
 		}
-		i++;
+		i += 2;
+	}
+	i = 1;
+	while(i < config->number_of_philosophers)
+	{
+		if (pthread_create(&config->philosophers[i]->thread, NULL, &routine, config->philosophers[i]) != 0)
+		{
+			ft_putstr_fd("Error: pthread_create failed\n", 2);
+			return (1);
+		}
+		i += 2;
 	}
 	return (0);
 }
@@ -94,14 +105,15 @@ int main(int argc, char **argv)
 		free_all(config);
 		return (1);
 	}
+	monitor(config);
 	if (join_philosophers(config))
 	{
 		free_all(config);
 		return (1);
 	}
 
-	printf("number of philosopher: %d\n", config->number_of_philosophers);
-	printf("time now: %lld\n", get_current_time());
+	//printf("number of philosopher: %d\n", config->number_of_philosophers);
+	//printf("time now: %lld\n", get_current_time());
 	free_all(config);
 	return (0);
 }

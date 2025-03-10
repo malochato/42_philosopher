@@ -1,6 +1,7 @@
 NAME = philo
 
-SRC =	routine.c \
+SRC =	monitor.c \
+		routine.c \
 		utils.c \
 		philo.c \
 		parser.c \

@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 14:01:43 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/10 00:23:14 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/10 22:33:41 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ int create_philosophers(t_config *config)
 		config->philosophers[i]->id = i + 1;
 		config->philosophers[i]->current_state = thinking;
 		config->philosophers[i]->last_meal_time = config->start_time;
-		//config->philosophers[i]->number_of_meals = 0;
+		config->philosophers[i]->time_eaten = 0;
 		config->philosophers[i]->finished = 0;
 
 
@@ -106,7 +106,7 @@ int	join_philosophers(t_config *config)
 			return (1);
 		}
 		i++;
-		printf("joined %d\n", i);
+		//printf("joined %d\n", i);
 	}
 	return (0);
 }

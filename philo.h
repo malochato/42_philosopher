@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 15:34:19 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/10 00:17:57 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/10 22:09:54 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ typedef enum e_philo_state
 	thinking,
 	eating,
 	sleeping,
-	dead
+	finished
 }	t_philo_state;
 
 
@@ -63,6 +63,7 @@ typedef struct s_philosopher
 
 	
 	pthread_mutex_t *print_mutex;
+	int	time_eaten;
 
 	int	finished;
 	pthread_mutex_t finished_mutex;
@@ -80,16 +81,21 @@ void ft_putstr_fd(char *str, int fd);
 int	create_philosophers(t_config *config);
 int	join_philosophers(t_config *config);
 
-void    *routine(void *arg);
+void	*routine(void *arg);
 long long get_current_time();
 
 
 int	parser(int argc, char **argv, t_config *config);
 
-int ft_usleep(int time);
 
-int need_to_talk(t_philosopher *philosopher, char *str);
+void	need_to_talk(t_philosopher *philosopher, char *str);
 
 int	init_config(int argc, char **argv, t_config *config);
+
+
+
+int	monitor(t_config *config);
+
+void	ft_usleep(long long time);
 
 #endif

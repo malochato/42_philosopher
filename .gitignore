@@ -53,5 +53,7 @@ dkms.conf
 
 # Local files
 LazyPhilosophersTester/*
+LazyPhilosophersTester
+LazyPhilosophersTester/
 philo
 .vscode/
