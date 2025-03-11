@@ -3,7 +3,7 @@ NAME = philo
 SRC =	monitor.c \
 		routine.c \
 		utils.c \
-		philo.c \
+		config.c \
 		parser.c \
 		main.c
 
@@ -18,7 +18,7 @@ OBJ = $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(FLAGS) -o $(NAME) $(OBJ) -lpthread
+	$(CC) $(FLAGS) -o $(NAME) $(OBJ)
 	@echo "Compilation done"
 
 $(OBJ_DIR)%.o: %.c

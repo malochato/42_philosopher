@@ -6,38 +6,74 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 14:07:25 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/10 22:01:23 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/11 01:56:58 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int ft_strlen(char *str)
+int	ft_strlen(char *str)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while (str[i])
-        i++;
-    return (i);
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
 }
 
-void ft_putstr_fd(char *str, int fd)
+void	ft_putstr_fd(char *str, int fd)
 {
-    write(fd, str, ft_strlen(str));
+	write(fd, str, ft_strlen(str));
 }
+
+void	need_to_talk(t_philosopher *philosopher, char *str)
+{
+	t_config	*config;
+
+	config = philosopher->config;
+	pthread_mutex_lock(&config->print_mutex);
+	if (config->philo_dead)
+	{
+		pthread_mutex_unlock(&config->print_mutex);
+		return ;
+	}
+	printf("[%lld] %d %s\n", \
+	get_current_time() - config->start_time, philosopher->id, str);
+	pthread_mutex_unlock(&config->print_mutex);
+}
+
+/*
+ This function retrieves the current time in milliseconds.
+ It uses the gettimeofday function to get the time in seconds and microseconds,
+ then converts it to milliseconds .
+ */
+
+long long	get_current_time(void)
+{
+	struct timeval	tv;
+
+	if (gettimeofday(&tv, NULL) == -1)
+	{
+		ft_putstr_fd("Error: gettimeofday failed\n", 2);
+		return (-1);
+	}
+	return ((tv.tv_sec) * 1000 + (tv.tv_usec) / 1000);
+}
+
+/*
+This function is more precise than usleep.
+It checks the time every 10 ms.
+This is referred to as granularity.
+With this function, we have better control over the timing 
+(finer granularity).
+*/
 
 void	ft_usleep(long long time)
 {
-	//long long start;
+	long long	start;
 
-	//start = get_current_time();
-	
-	usleep(time * 1000);
-	
-	//while (get_current_time() - start < time)
-	//	usleep(100);
+	start = get_current_time();
+	while (get_current_time() - start < time)
+		usleep(time / 10);
 }
-
-
-//convertion de micro a miliseconde

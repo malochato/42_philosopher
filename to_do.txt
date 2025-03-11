@@ -1,4 +1,0 @@
-Don't forget to remove the .vscode
-
-
-check what is helgrind
