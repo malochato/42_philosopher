@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 20:34:34 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/11 01:27:41 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/12 23:54:14 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ int	check_on_the_little_philosopher(t_config *config)
 	int			finished_philo;
 
 	i = 0;
+	finished_philo = 0;
 	while (i < config->nb_philosophers)
 	{
 		if (config->philosophers[i]->current_state == finished)
