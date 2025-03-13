@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 14:01:43 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/13 20:12:07 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/14 00:24:52 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	create_philosophers(t_config *config)
 	return (0);
 }
 
-int init_sem(t_config *config)
+int init_semaphor(t_config *config)
 {
 	sem_unlink("/forks");
 	config->forks = sem_open("/forks", O_CREAT, 0644, config->nb_philosophers);
@@ -64,7 +64,6 @@ int init_sem(t_config *config)
 int	init_config(int argc, char **argv, t_config *config)
 {
 	config->philosophers = NULL;
-	config->philo_dead = 0;
 	config->start_time = get_current_time();
 	if (parser(argc, argv, config))
 		return (1);
@@ -80,7 +79,7 @@ int	init_config(int argc, char **argv, t_config *config)
 		ft_putstr_fd("Error: malloc failed\n", 2);
 		return (1);
 	}
-	if (init_sem(config))
+	if (init_semaphor(config))
 		return (1);
 	config->child_pids = malloc(sizeof(pid_t) * config->nb_philosophers);
 	if (!config->child_pids)

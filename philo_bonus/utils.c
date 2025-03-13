@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 14:07:25 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/13 17:11:12 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/14 00:26:58 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,6 @@ void	need_to_talk(t_philosopher *philosopher, char *str)
 
 	config = philosopher->config;
 	sem_wait(config->print_semaphor);
-	if (config->philo_dead)
-	{
-		sem_post(config->print_semaphor);
-		return ;
-	}
 	printf("[%lld] %d %s\n", \
 	get_current_time() - config->start_time, philosopher->id, str);
 	sem_post(config->print_semaphor);

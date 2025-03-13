@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 14:18:18 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/13 21:42:45 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/14 00:23:56 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,18 @@ void	think(t_philosopher *philosopher)
 on peut avoir un deadlock si tous les philos prennent une fourchette 
 comment eviter ce probleme ?
 */
-
-
 void	eat(t_philosopher *philosopher)
 {
 
-	int forks_left;
+/* 	int forks_left;
 	sem_getvalue(philosopher->config->forks, &forks_left);
-	printf("Forks left: %d\n", forks_left);
+	printf("Forks left: %d\n", forks_left); */
+
+
+	
+	sem_wait(philosopher->config->forks);
 	sem_wait(philosopher->config->forks);
 	need_to_talk(philosopher, "has taken a fork");
-	sem_wait(philosopher->config->forks);
 	need_to_talk(philosopher, "has taken a fork");
 
 
@@ -55,15 +56,21 @@ void	eat(t_philosopher *philosopher)
 	sem_post(philosopher->config->forks);
 }
 
-void	*routine(t_philosopher	*philosopher)
+int	routine(t_philosopher *philosopher)
 {
+	if (pthread_create(&philosopher->thread, NULL, (void *)monitor_thread, philosopher))
+	{
+		ft_putstr_fd("Error: pthread_create failed\n", 2);
+		return (1);
+	}
+	
 	if (philosopher->config->nb_philosophers == 1)
 	{
 		need_to_talk(philosopher, "has taken a fork");
 		ft_usleep(philosopher->config->time_to_die);
-		return (NULL);
-	}
-	while (philosopher->config->philo_dead == 0)
+		return (1);
+	}	
+	while (philosopher->current_state != finished && philosopher->current_state != dead) 
 	{
 		eat(philosopher);
 		if (philosopher->config->number_of_times_each_philosopher_must_eat \
@@ -72,6 +79,41 @@ void	*routine(t_philosopher	*philosopher)
 		sleep_zzz(philosopher);
 		think(philosopher);
 	}
-	philosopher->current_state = finished;
-	return (NULL);
+	
+	if (pthread_join(philosopher->thread, NULL))
+	{
+		ft_putstr_fd("Error: pthread_join failed\n", 2);
+		return (1);
+	}
+	free_all(philosopher->config);
+	return (0);
 }
+
+/* 
+void	*monitor_thread(void *arg)
+{
+	t_philosopher	*philosopher;
+
+	philosopher = (t_philosopher *)arg;
+	while (1)
+	{
+		if (get_current_time() - philosopher->last_meal_time > philosopher->config->time_to_die)
+		{
+			philosopher->current_state = dead;
+			sem_wait(philosopher->config->print_semaphor);
+			printf("[%lld] %d %s\n", get_current_time() - philosopher->config->start_time, philosopher->id, "died");
+			
+			free_all(philosopher->config);
+			exit(1);
+		
+		}
+		if (philosopher->config->number_of_times_each_philosopher_must_eat != -1 && \
+philosopher->nb_time_eaten == philosopher->config->number_of_times_each_philosopher_must_eat)
+		{
+			philosopher->current_state = finished;
+			return (NULL);
+		}
+		ft_usleep(50);
+	}
+	return (NULL);
+} */

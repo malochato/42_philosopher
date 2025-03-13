@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 23:58:51 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/13 21:43:30 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/13 23:58:39 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,22 @@
 
 void	sem_close_unlink(t_config *config)
 {
-	if (sem_close(config->forks) < 0)
-		ft_putstr_fd("Error: sem_close failed\n", 2);
+	(void)config;
 	if (sem_unlink("/forks") < 0)
 		ft_putstr_fd("Error: sem_unlink failed\n", 2);
-	
-	if (sem_close(config->print_semaphor) < 0)
-		ft_putstr_fd("Error: sem_close failed\n", 2);
 	if (sem_unlink("/print_semaphor") < 0)
 		ft_putstr_fd("Error: sem_unlink failed\n", 2);
 }
+
 
 void	free_all(t_config *config)
 {
 	int	i;
 
+	if (sem_close(config->forks) < 0)
+		ft_putstr_fd("Error: sem_close failed\n", 2);
+	if(sem_close(config->print_semaphor) < 0)
+		ft_putstr_fd("Error: sem_close failed\n", 2);
 	i = 0;
 	if (config->philosophers)
 	{
@@ -48,7 +49,7 @@ int	start_the_feast(t_config *config)
 {
     int	i;
     pid_t	pid;
-
+	int	ret;
 
 
     i = 0;
@@ -63,11 +64,10 @@ int	start_the_feast(t_config *config)
         }
         if (pid == 0)
         {
-            printf("Je suis le processus enfant %d, mon PID est %d\n", i, getpid());
-            free_all(config);
-            ft_usleep(i * 1000 + 5000);
-            exit(i%2);
-            //routine(config->philosophers[i]);
+			ft_usleep(i);
+            ret = routine(config->philosophers[i]);
+			free_all(config);
+			exit(ret);
         }
         config->child_pids[i] = pid;
         i++;
@@ -91,7 +91,7 @@ int	main(int argc, char **argv)
     if (start_the_feast(config))
         return (free_all(config), 1);
     printf("Monitoring\n");
-    monitor(config);
+    monitor_process(config);
     printf("Freeing all resources\n");
     sem_close_unlink(config);
 	free_all(config);
