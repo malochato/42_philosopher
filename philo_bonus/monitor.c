@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 20:34:34 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/12 23:52:50 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/13 21:39:41 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,11 @@ int	check_on_the_little_philosopher(t_config *config)
 		else if (get_current_time() \
 			- config->philosophers[i]->last_meal_time > config->time_to_die)
 		{
-			pthread_mutex_lock(&config->print_mutex);
+			sem_wait(config->print_semaphor);
 			printf("[%lld] %d %s\n", get_current_time() \
 			- config->start_time, config->philosophers[i]->id, "died");
 			config->philo_dead = 1;
-			pthread_mutex_unlock(&config->print_mutex);
+			sem_post(config->print_semaphor);
 			return (42);
 		}
 		i++;
@@ -51,17 +51,42 @@ than 10 ms of delay after a philosopher dies.
 I put 5 ms to be sure, that this condition is respected.
 */
 
-int	monitor(t_config *config)
-{
-	int	finished_philo;
 
+int monitor(t_config *config)
+{
+	int     i;
+	pid_t   pid;
+	int     finished_philo;
+	int     status;
+
+	(void)finished_philo;
 	while (1)
 	{
-		finished_philo = check_on_the_little_philosopher(config);
-		if (config->philo_dead \
-		|| finished_philo == config->nb_philosophers)
-			break ;
-		ft_usleep(5);
+
+		pid = waitpid(-1, &status, WNOHANG);
+		printf("pid: %d\n", pid);
+		if (pid > 0)
+		{
+			if (WIFEXITED(status))
+            {
+                printf("Process %d finished with status %d\n", pid, WEXITSTATUS(status));
+            }
+            else if (WIFSIGNALED(status))
+            {
+                printf("Process %d was killed by signal %d\n", pid, WTERMSIG(status));
+            }
+
+
+			i = 0;
+			while (i < config->nb_philosophers)
+			{
+				kill(config->child_pids[i], SIGKILL);
+				printf("Killed %d\n", config->child_pids[i]);
+				i++;
+			}
+			break;
+		}
+		ft_usleep(50);
 	}
 	return (0);
 }

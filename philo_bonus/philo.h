@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 15:34:19 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/11 01:27:41 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/13 21:42:57 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,12 @@
 # include <string.h>
 # include <unistd.h>
 # include <sys/time.h>
-# include <pthread.h>
 # include <limits.h>
+# include <semaphore.h>
+# include <pthread.h>
+# include <fcntl.h>
+# include <sys/stat.h>
+# include <sys/wait.h>
 
 # define PHILO_MAX 200
 
@@ -45,8 +49,11 @@ typedef struct s_config
 	long long		start_time;
 	int				philo_dead;
 
-	pthread_mutex_t	*forks;
-	pthread_mutex_t	print_mutex;
+
+	pid_t	*child_pids;
+
+	sem_t	*forks;
+	sem_t	*print_semaphor;
 
 }	t_config;
 
@@ -58,12 +65,9 @@ typedef struct s_philosopher
 	t_config		*config;
 	pthread_t		thread;
 
-	pthread_mutex_t	*print_mutex;
 	int				nb_time_eaten;
 
 	int				finished;
-	pthread_mutex_t	finished_mutex;
-
 }	t_philosopher;
 
 //utils.c
@@ -81,7 +85,7 @@ int			parser(int argc, char **argv, t_config *config);
 int			monitor(t_config *config);
 
 //routine.c
-void		*routine(void *arg);
+void		*routine(t_philosopher	*philosopher);
 void		need_to_talk(t_philosopher *philosopher, char *str);
 
 #endif

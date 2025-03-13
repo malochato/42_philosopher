@@ -6,73 +6,74 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 23:58:51 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/12 23:50:04 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/13 21:43:30 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	sem_close_unlink(t_config *config)
+{
+	if (sem_close(config->forks) < 0)
+		ft_putstr_fd("Error: sem_close failed\n", 2);
+	if (sem_unlink("/forks") < 0)
+		ft_putstr_fd("Error: sem_unlink failed\n", 2);
+	
+	if (sem_close(config->print_semaphor) < 0)
+		ft_putstr_fd("Error: sem_close failed\n", 2);
+	if (sem_unlink("/print_semaphor") < 0)
+		ft_putstr_fd("Error: sem_unlink failed\n", 2);
+}
 
 void	free_all(t_config *config)
 {
 	int	i;
 
 	i = 0;
-	if (config->forks)
-	{
-		while (i < config->nb_philosophers)
-		{
-			pthread_mutex_destroy(&config->forks[i]);
-			i++;
-		}
-		free(config->forks);
-	}
-	i = 0;
 	if (config->philosophers)
 	{
 		while (i < config->nb_philosophers)
 		{
-			pthread_mutex_destroy(&config->philosophers[i]->finished_mutex);
 			free(config->philosophers[i]);
 			i++;
 		}
 		free(config->philosophers);
 	}
+	if (config->child_pids)
+		free(config->child_pids);
 	free(config);
 }
 
 int	start_the_feast(t_config *config)
 {
-	int	i;
+    int	i;
+    pid_t	pid;
 
-	i = 0;
-	while (i < config->nb_philosophers)
-	{
-		if (pthread_create(&config->philosophers[i]->thread, \
-		NULL, &routine, config->philosophers[i]) != 0)
-		{
-			ft_putstr_fd("Error: pthread_create failed\n", 2);
-			return (1);
-		}
-		i ++;
-	}
-	return (0);
-}
 
-int	join_philosophers(t_config *config)
-{
-	int	i;
 
-	i = 0;
-	while (i < config->nb_philosophers)
-	{
-		if (pthread_join(config->philosophers[i]->thread, NULL) != 0)
-		{
-			ft_putstr_fd("Error: pthread_join failed\n", 2);
-			return (1);
-		}
-		i++;
-	}
-	return (0);
+    i = 0;
+    while (i < config->nb_philosophers)
+    {
+        pid = fork();
+        if (pid == -1)
+        {
+            ft_putstr_fd("Error: fork failed\n", 2);
+            free(config->child_pids);
+            return (1);
+        }
+        if (pid == 0)
+        {
+            printf("Je suis le processus enfant %d, mon PID est %d\n", i, getpid());
+            free_all(config);
+            ft_usleep(i * 1000 + 5000);
+            exit(i%2);
+            //routine(config->philosophers[i]);
+        }
+        config->child_pids[i] = pid;
+        i++;
+    }
+
+    return (0);
 }
 
 int	main(int argc, char **argv)
@@ -91,11 +92,9 @@ int	main(int argc, char **argv)
         return (free_all(config), 1);
     printf("Monitoring\n");
     monitor(config);
-    printf("Joining philosophers\n");
-    if (join_philosophers(config))
-        return (free_all(config), 1);
     printf("Freeing all resources\n");
-    free_all(config);
+    sem_close_unlink(config);
+	free_all(config);
     printf("Exiting program\n");
     return (0);
 }
@@ -110,7 +109,7 @@ int	main(int argc, char **argv)
 		return (ft_putstr_fd("Error: malloc failed\n", 2), 1);
 	if (init_config(argc, argv, config))
 		return (free_all(config), 1);
-	if (start_the_feast(config))
+	if (start_the_feast(config)) 
 		return (free_all(config), 1);
 	monitor(config);
 	if (join_philosophers(config))

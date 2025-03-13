@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 14:18:18 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/11 01:30:48 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/13 21:42:45 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,53 +24,39 @@ void	think(t_philosopher *philosopher)
 	philosopher->current_state = thinking;
 	need_to_talk(philosopher, "is thinking");
 }
+
 /* 
-By alternating the order in which philosophers pick up the forks,
-this ensures that no philosophers are waiting for the same fork 
-at the same time. This prevents the circular wait condition.
- */
+on peut avoir un deadlock si tous les philos prennent une fourchette 
+comment eviter ce probleme ?
+*/
 
-void	take_fork(t_philosopher *philosopher)
-{
-	int	left_fork;
-	int	right_fork;
-
-	left_fork = philosopher->id - 1;
-	right_fork = philosopher->id % philosopher->config->nb_philosophers;
-	if (philosopher->id % 2 == 0)
-	{
-		pthread_mutex_lock(&philosopher->config->forks[right_fork]);
-		need_to_talk(philosopher, "has taken a fork");
-		pthread_mutex_lock(&philosopher->config->forks[left_fork]);
-		need_to_talk(philosopher, "has taken a fork");
-	}
-	else
-	{
-		pthread_mutex_lock(&philosopher->config->forks[left_fork]);
-		need_to_talk(philosopher, "has taken a fork");
-		pthread_mutex_lock(&philosopher->config->forks[right_fork]);
-		need_to_talk(philosopher, "has taken a fork");
-	}
-}
 
 void	eat(t_philosopher *philosopher)
 {
-	take_fork(philosopher);
+
+	int forks_left;
+	sem_getvalue(philosopher->config->forks, &forks_left);
+	printf("Forks left: %d\n", forks_left);
+	sem_wait(philosopher->config->forks);
+	need_to_talk(philosopher, "has taken a fork");
+	sem_wait(philosopher->config->forks);
+	need_to_talk(philosopher, "has taken a fork");
+
+
 	philosopher->current_state = eating;
 	need_to_talk(philosopher, "is eating");
 	philosopher->last_meal_time = get_current_time();
 	ft_usleep(philosopher->config->time_to_eat);
 	philosopher->nb_time_eaten++;
-	pthread_mutex_unlock(&philosopher->config->forks[philosopher->id - 1]);
-	pthread_mutex_unlock(&philosopher->config->forks \
-	[philosopher->id % philosopher->config->nb_philosophers]);
+
+
+
+	sem_post(philosopher->config->forks);
+	sem_post(philosopher->config->forks);
 }
 
-void	*routine(void *arg)
+void	*routine(t_philosopher	*philosopher)
 {
-	t_philosopher	*philosopher;
-
-	philosopher = (t_philosopher *)arg;
 	if (philosopher->config->nb_philosophers == 1)
 	{
 		need_to_talk(philosopher, "has taken a fork");
