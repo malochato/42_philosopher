@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 15:34:19 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/11 01:27:41 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/18 17:16:49 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ typedef struct s_philosopher
 	int				nb_time_eaten;
 
 	int				finished;
-	pthread_mutex_t	finished_mutex;
 
 }	t_philosopher;
 

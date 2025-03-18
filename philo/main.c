@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 23:58:51 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/11 01:42:59 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/18 18:42:06 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ void	free_all(t_config *config)
 	{
 		while (i < config->nb_philosophers)
 		{
-			pthread_mutex_destroy(&config->philosophers[i]->finished_mutex);
 			free(config->philosophers[i]);
 			i++;
 		}

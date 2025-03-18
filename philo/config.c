@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 14:01:43 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/11 01:28:05 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/18 17:16:51 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ int	create_philosophers(t_config *config)
 		config->philosophers[i]->last_meal_time = config->start_time;
 		config->philosophers[i]->nb_time_eaten = 0;
 		config->philosophers[i]->finished = 0;
-		pthread_mutex_init(&config->philosophers[i]->finished_mutex, NULL);
 		i++;
 	}
 	return (0);
