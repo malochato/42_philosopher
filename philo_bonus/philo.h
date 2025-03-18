@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/27 15:34:19 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/13 23:59:13 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/18 20:33:30 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ typedef enum e_philo_state
 	thinking,
 	eating,
 	sleeping,
-	finished, 
+	finished,
 	dead
 }	t_philo_state;
 
@@ -49,11 +49,10 @@ typedef struct s_config
 	t_philosopher	**philosophers;
 	long long		start_time;
 
+	pid_t			*child_pids;
 
-	pid_t	*child_pids;
-
-	sem_t	*forks;
-	sem_t	*print_semaphor;
+	sem_t			*forks;
+	sem_t			*print_semaphor;
 
 }	t_config;
 
@@ -63,7 +62,6 @@ typedef struct s_philosopher
 	t_philo_state	current_state;
 	long long		last_meal_time;
 	t_config		*config;
-	pthread_t		thread;
 
 	int				nb_time_eaten;
 
@@ -82,15 +80,13 @@ int			init_config(int argc, char **argv, t_config *config);
 int			parser(int argc, char **argv, t_config *config);
 
 //monitor.c
-int	monitor_process(t_config *config);
-void	*monitor_thread(void *arg);
-
+int			monitor_process(t_config *config);
+void		*monitor_thread(void *arg);
 
 //routine.c
-int	routine(t_philosopher *philosopher);
+int			routine(t_philosopher *philosopher);
 void		need_to_talk(t_philosopher *philosopher, char *str);
 
 //main.c
-void	free_all(t_config *config);
-
+void		free_all(t_config *config);
 #endif

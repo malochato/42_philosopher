@@ -6,7 +6,7 @@
 /*   By: malde-ch <malo@chato.fr>                   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 14:01:43 by malde-ch          #+#    #+#             */
-/*   Updated: 2025/03/14 00:24:52 by malde-ch         ###   ########.fr       */
+/*   Updated: 2025/03/18 20:32:07 by malde-ch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	create_philosophers(t_config *config)
 	return (0);
 }
 
-int init_semaphor(t_config *config)
+int	init_semaphor(t_config *config)
 {
 	sem_unlink("/forks");
 	config->forks = sem_open("/forks", O_CREAT, 0644, config->nb_philosophers);
@@ -49,7 +49,6 @@ int init_semaphor(t_config *config)
 		ft_putstr_fd("Error: sem_open failed\n", 2);
 		return (1);
 	}
-
 	sem_unlink("/print_semaphor");
 	config->print_semaphor = sem_open("/print_semaphor", O_CREAT, 0644, 1);
 	if (config->print_semaphor == SEM_FAILED)
@@ -59,7 +58,6 @@ int init_semaphor(t_config *config)
 	}
 	return (0);
 }
-
 
 int	init_config(int argc, char **argv, t_config *config)
 {
